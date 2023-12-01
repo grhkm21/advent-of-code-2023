@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Check if the argument is provided
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 <day>"
+  exit 1
+fi
+
+# Check if the argument is a number between 1 and 25
+if ! [[ "$1" =~ ^[1-9]$|^1[0-9]$|^2[0-5]$ ]]; then
+  echo "Error: Invalid argument. Please provide a number between 1 and 25."
+  exit 1
+fi
+
+num=$(printf "%02d" "$1")
+command="jq -nR -f q${num}.jq ../input/in_2023_${num}"
+echo "Executing command: $command"
+eval "$command"
