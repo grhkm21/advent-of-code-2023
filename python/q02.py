@@ -13,6 +13,7 @@ from collections import Counter
 from functools import reduce, cache
 from random import random, randrange, randint
 from tqdm import tqdm, trange
+from util import *
 
 
 def parse_data():
@@ -31,17 +32,43 @@ def parse_data():
 
 
 def part1(data):
+    ans = 0
 
-    pass
+    for line in data:
+        cur_id = int(line.split(": ")[0].split()[1])
+        data = [u.split(", ") for u in line.split(": ")[1].split("; ")]
+        cnt = Counter()
+        ok = True
+        for u in data:
+            for v in u:
+                a, b = v.split()
+                # cnt[b] += int(a)
+                if int(a) > {"red": 12, "green": 13, "blue": 14}[b]:
+                    ok = False
+        if ok:
+            ans += cur_id
+        # if cnt["blue"] <= 14 and cnt["red"] <= 12 and cnt["green"] <= 13:
+        #     ans += cur_id
 
-    return None
+    return ans
 
 
 def part2(data):
+    ans = 0
 
-    pass
+    for line in data:
+        mn = Counter()
+        cur_id = int(line.split(": ")[0].split()[1])
+        data = [u.split(", ") for u in line.split(": ")[1].split("; ")]
+        cnt = Counter()
+        ok = True
+        for u in data:
+            for v in u:
+                a, b = v.split()
+                mn[b] = max(mn[b], int(a))
+        ans += product(mn.values())
 
-    return None
+    return ans
 
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@ from collections import Counter
 from functools import reduce, cache
 from random import random, randrange, randint
 from tqdm import tqdm, trange
+from util import *
 
 
 def parse_data():
@@ -31,17 +32,21 @@ def parse_data():
 
 
 def part1(data):
+    ans = 0
 
-    pass
+    for line in data:
+        pass
 
-    return None
+    return ans
 
 
 def part2(data):
+    ans = 0
 
-    pass
+    for line in data:
+        pass
 
-    return None
+    return ans
 
 
 if __name__ == "__main__":
