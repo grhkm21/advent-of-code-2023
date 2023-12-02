@@ -1,3 +1,4 @@
 /cookies.json
 /input
 */__pycache__
+.DS_STORE
