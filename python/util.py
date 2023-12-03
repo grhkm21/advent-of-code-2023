@@ -22,4 +22,17 @@ def average(arr):
 def product(arr):
     return reduce(mul, arr)
 
+def adj4(x, y):
+    yield (x - 1, y)
+    yield (x + 1, y)
+    yield (x, y - 1)
+    yield (x, y + 1)
+
+def adj8(x, y):
+    for dx in range(-1, 2):
+        for dy in range(-1, 2):
+            if dx == dy == 0:
+                continue
+            yield (x + dx, y + dy)
+
 prod = product
