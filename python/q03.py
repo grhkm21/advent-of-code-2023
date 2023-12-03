@@ -42,23 +42,10 @@ def part1(data):
                 symbols.add((i, j))
 
     for i in range(n):
-        j = 0
-        while j < m:
-            if data[i][j] not in string.digits:
-                j += 1
-                continue
-            cur_str = ""
-            ok = False
-            while j < m and data[i][j] in string.digits:
-                cur_str += data[i][j]
-                if any(pos in symbols for pos in adj4(i, j)):
-                    ok = True
-                j += 1
-            if ok:
-                print(cur_str)
-                ans += int(cur_str)
-            else:
-                print("not ok", cur_str)
+        for match in re.finditer(r"\d+", data[i]):
+            start, end, num = match.start(), match.end(), match.group()
+            if any(pos in symbols for j in range(start, end) for pos in adj8(i, j)):
+                ans += int(num)
 
     return ans
 
@@ -67,41 +54,25 @@ def part2(data):
     ans = 0
 
     n, m = len(data), len(data[0])
-    symbols = set()
     mp = {}
     for i in range(n):
         for j in range(m):
-            if data[i][j] not in '.' + string.digits:
-                symbols.add((i, j))
-                if data[i][j] == '*':
-                    mp[i, j] = []
+            if data[i][j] == '*':
+                mp[i, j] = []
 
     for i in range(n):
-        j = 0
-        while j < m:
-            if data[i][j] not in string.digits:
-                j += 1
-                continue
-            cur_str = ""
-            ok = False
-            ok2 = set()
-            while j < m and data[i][j] in string.digits:
-                cur_str += data[i][j]
-                for pos in adj4(i, j):
-                    if pos in symbols:
-                        ok = True
-                        if pos in mp:
-                            ok2.add(pos)
-                j += 1
-            if ok:
-                for pos in ok2:
-                    mp[pos].append(int(cur_str))
+        for match in re.finditer(r"\d+", data[i]):
+            start, end, num = match.start(), match.end(), int(match.group())
+            added = set()
+            for j in range(start, end):
+                for pos in adj8(i, j):
+                    if pos in mp and pos not in added:
+                        added.add(pos)
+                        mp[pos].append(num)
 
-    for key in mp:
-        if len(mp[key]) >= 2:
-            assert len(mp[key]) == 2
-            print(key, mp[key])
-            ans += product(mp[key])
+    for val in mp.values():
+        if len(val) >= 2:
+            ans += product(val)
 
     return ans
 
