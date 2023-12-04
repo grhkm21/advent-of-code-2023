@@ -1,3 +1,4 @@
+import glob
 import hashlib
 import itertools
 import json
@@ -17,39 +18,35 @@ from util import *
 
 
 def parse_data():
-    qno = __file__.split("/")[-1]
+    if len(sys.argv) == 1:
+        qno = __file__.split("/")[-1]
+        if qno == "template.py":
+            raise RuntimeError("The code does not work for template.py :)")
+        else:
+            fname = "../input/in_2023_" + qno[1:3]
+    elif len(sys.argv) == 2:
+        fname = sys.argv[1]
+    else:
+        raise RuntimeError(f"Usage: {sys.argv[0]} [input]")
 
-    if qno == "template.py":
-        raise RuntimeError("The code does not work for template.py :)")
-
-    qno = qno[1:3]
-    with open(f"../input/in_2023_{qno}", "r") as fin:
+    with open(fname, "r") as fin:
         lines = fin.read().strip().split("\n")
-
-    pass
 
     return lines
 
 
-def part1(data):
-    ans = 0
+def solve(data):
+    part1 = 0
+    part2 = 0
 
     for line in data:
         pass
 
-    return ans
-
-
-def part2(data):
-    ans = 0
-
-    for line in data:
-        pass
-
-    return ans
+    return (part1, part2)
 
 
 if __name__ == "__main__":
     data = parse_data()
-    print("[!] part1:", part1(data))
-    print("[!] part2:", part2(data))
+    part1, part2 = solve(data)
+    print("[!] part1:", part1)
+    print("[!] part2:", part2)
