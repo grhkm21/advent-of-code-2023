@@ -2,5 +2,5 @@
 /input
 */__pycache__
 .DS_STORE
-/python/in
+/*/in
 /bqn/a.bqn
