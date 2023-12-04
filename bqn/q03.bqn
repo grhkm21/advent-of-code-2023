@@ -16,6 +16,8 @@ part1 ← +´(•ParseFloat 1⊏⍉)¨(⊑∘(∨˝)∘⊏⍉)¨⊸/pack1
 mask2 ← ⥊⊐⟜⟨1⟩˘⌾⍉ muls ((1⊸≥)∘⌈´(|-))⌜ dpos
 pack2 ← (∘‿2⊸⥊∾)¨(mask2⋈¨⊢)⌾∾nums
 part2 ← +´(×´(•ParseFloat 1⊏⍉)¨)¨(1⊸<≠)¨⊸/⊏⟜pack2⌾∾(1⊸↓⌾⌽)⊔(⊑∘(⌊˝)∘⊏⍉)¨pack2
+(1⊸↓⌾⌽)⊔(⊑∘(⌊˝)∘⊏⍉)¨pack2
+⊏⟜pack2⌾∾(1⊸↓⌾⌽)⊔(⊑∘(⌊˝)∘⊏⍉)¨pack2
 
 •Out •Repr part1
 •Out •Repr part2
