@@ -11,6 +11,8 @@ pack1 ← (∘‿2⊸⥊∾)¨(mask1⋈¨⊢)⌾∾nums
 part1 ← +´(•ParseFloat 1⊏⍉)¨(⊑∘(∨˝)∘⊏⍉)¨⊸/pack1
 
 # TODO: Try ≍
+# TODO: Fix WA for 123 .*. 123
+
 mask2 ← ⥊⊐⟜⟨1⟩˘⌾⍉ muls ((1⊸≥)∘⌈´(|-))⌜ dpos
 pack2 ← (∘‿2⊸⥊∾)¨(mask2⋈¨⊢)⌾∾nums
 part2 ← +´(×´(•ParseFloat 1⊏⍉)¨)¨(1⊸<≠)¨⊸/⊏⟜pack2⌾∾(1⊸↓⌾⌽)⊔(⊑∘(⌊˝)∘⊏⍉)¨pack2
