@@ -30,17 +30,62 @@ def parse_data():
         raise RuntimeError(f"Usage: {sys.argv[0]} [input]")
 
     with open(fname, "r") as fin:
-        lines = fin.read().strip().split("\n")
+        lines = fin.read().strip().split("\n\n")
 
     return lines
 
 
 def solve(data):
     part1 = 0
-    part2 = 0
+    part2 = 10**100
 
-    for line in data:
-        pass
+    maps = [block.split(":")[1].strip().split("\n") for block in data]
+
+    assert len(maps[0]) == 1
+    orig = list(map(int, maps[0][0].split()))
+
+    @cache
+    def follow(val):
+        path = []
+        for block in maps[1:]:
+            for i, rg in enumerate(block):
+                dest, src, length = list(map(int, rg.split()))
+                if src <= val < src + length:
+                    val = dest + (val - src)
+                    path.append(i)
+                    break
+        return val, path
+
+    part1 = min(map(follow, orig))[0]
+
+    # part 2 - binary search for spots where the "path" followed changes
+    def search(start, end):
+        if end < start:
+            return None
+
+        mid = (start + end) // 2
+        val_start = follow(start)
+        val_mid = follow(mid)
+        val_end = follow(end)
+        if val_start[1] == val_end[1]:
+            return val_start[0]
+
+        if end == start + 1:
+            return val_end[0]
+
+        ans = 10**100
+        if val_start[1] != val_mid[1]:
+            ans = min(ans, search(start, mid))
+
+        if val_mid[1] != val_end[1]:
+            ans = min(ans, search(mid, end))
+
+        return ans
+
+    for i in range(0, len(orig), 2):
+        start, length = orig[i], orig[i + 1]
+        range_ans = search(start, start + length - 1)
+        part2 = min(part2, range_ans)
 
     return (part1, part2)
 
