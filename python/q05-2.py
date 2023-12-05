@@ -81,7 +81,7 @@ def solve(data):
     return (part1, part2)
 
 
-def main(data, file=sys.stdout):
+def main(file=sys.stdout):
     part1, part2 = solve(data)
     print("[!] part1:", part1, file=file)
     print("[!] part2:", part2, file=file)
@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
         print(f"Timing code for {arg} times!")
         with open(os.devnull, "w") as fout:
-            t = timeit.timeit(lambda: main(data, file=fout), number=arg) / arg
+            t = timeit.timeit(lambda: main(file=fout), number=arg) / arg
             print(f"Time taken: {t}")
     else:
-        main(data)
+        main()

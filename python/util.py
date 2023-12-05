@@ -61,4 +61,8 @@ def revmap(mp):
     return res
 
 
+def get_ints(s):
+    return list(map(int, re.findall(r"\d+", s)))
+
+
 prod = product
