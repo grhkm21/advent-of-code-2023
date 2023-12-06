@@ -11,7 +11,9 @@ import string
 import sys
 import time
 import timeit
+import datetime
 
+from typing import Any
 from collections import Counter, deque
 from functools import reduce, cache
 from random import random, randrange, randint
@@ -31,13 +33,12 @@ def parse_data():
     else:
         raise RuntimeError(f"Usage: {sys.argv[0]} [input]")
 
+    global data
     with open(fname, "r") as fin:
-        lines = fin.read().strip().split("\n")
-
-    return lines
+        data = fin.read().strip().split("\n")
 
 
-def solve(data):
+def solve():
     part1 = 0
     part2 = 0
 
@@ -48,14 +49,13 @@ def solve(data):
 
 
 def main(file=sys.stdout):
-    part1, part2 = solve(data)
+    part1, part2 = solve()
     print("[!] part1:", part1, file=file)
     print("[!] part2:", part2, file=file)
 
 
 if __name__ == "__main__":
-    global data
-    data = parse_data()
+    parse_data()
     arg = os.environ.get("TIME")
 
     if arg is not None:
@@ -66,7 +66,13 @@ if __name__ == "__main__":
 
         print(f"Timing code for {arg} times!")
         with open(os.devnull, "w") as fout:
-            t = timeit.timeit(lambda: main(file=fout), number=arg) / arg
-            print(f"Time taken: {t}")
+            μt = timeit.timeit(lambda: main(file=fout), number=arg) / arg * 10**6
+            if μt < 10**3:
+                print(f"Time taken: {μt:.2f}μs")
+            elif μt < 10**6:
+                print(f"Time taken: {μt * 10**3:.2f}ms")
+            else:
+                print(f"Time taken: {μt * 10**6:.2f}s")
     else:
         main()
+

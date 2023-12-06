@@ -15,6 +15,12 @@ from functools import reduce, cache
 from random import random, randrange, randint
 from tqdm import tqdm, trange
 
+try:
+    import gmpy2
+    from gmpy2.gmpy2 import mpz
+except ModuleNotFoundError:
+    pass
+
 
 def average(arr):
     arr = list(arr)

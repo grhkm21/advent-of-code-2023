@@ -10,6 +10,7 @@ import string
 import sys
 import time
 import timeit
+import datetime
 
 from math import floor, sqrt
 from collections import Counter, deque
@@ -74,8 +75,13 @@ if __name__ == "__main__":
 
         print(f"Timing code for {arg} times!")
         with open(os.devnull, "w") as fout:
-            t = timeit.timeit(lambda: main(file=fout), number=arg) / arg
-            print(f"Time taken: {t}")
+            μt = timeit.timeit(lambda: main(file=fout), number=arg) / arg * 10**6
+            if μt < 10**3:
+                print(f"Time taken: {μt:.2f}μs")
+            elif μt < 10**6:
+                print(f"Time taken: {μt * 10**3:.2f}ms")
+            else:
+                print(f"Time taken: {μt * 10**6:.2f}s")
     else:
         main()
 
