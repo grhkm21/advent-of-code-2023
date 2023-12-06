@@ -33,8 +33,6 @@ def parse_data():
 
     with open(fname, "r") as fin:
         lines = fin.read().strip().split("\n")
-        # Note: It might include the header "Game ...:" number!
-        # lines = [get_ints(line) for line in lines]
 
     return lines
 
