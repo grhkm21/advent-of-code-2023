@@ -66,7 +66,6 @@ def solve(data):
     def search(start, end):
         mid = (start + end) // 2
         val_start = follow(start)
-        val_mid = follow(mid)
         val_end = follow(end)
 
         if val_start[1] == val_end[1]:
@@ -75,14 +74,7 @@ def solve(data):
         if end == start + 1:
             return min(val_start[0], val_end[0])
 
-        ans = 10**100
-        if val_start[1] != val_mid[1]:
-            ans = min(ans, search(start, mid))
-
-        if val_mid[1] != val_end[1]:
-            ans = min(ans, search(mid, end))
-
-        return ans
+        return min(search(start, mid), search(mid, end))
 
     for i in range(0, len(orig), 2):
         start, length = orig[i], orig[i + 1]
