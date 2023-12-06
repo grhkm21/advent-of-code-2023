@@ -45,12 +45,11 @@ def solve(data):
     maps = [[list(map(int, val.split())) for val in mp] for mp in maps]
 
     assert len(maps[0]) == 1
-    orig, maps = maps[0][0], maps[1:]
+    orig, maps = maps[0][0], [sorted(mp, key=lambda u: u[1]) for mp in maps[1:]]
 
     def follow(val):
-        for block in maps[1:]:
-            for i, rg in enumerate(block):
-                dest, src, length = rg
+        for block in maps:
+            for dest, src, length in block:
                 if src <= val < src + length:
                     val = dest + (val - src)
                     break
@@ -59,25 +58,32 @@ def solve(data):
     part1 = min(map(follow, orig))
 
     dq = [(orig[i], orig[i] + orig[i + 1] - 1) for i in range(0, len(orig), 2)]
-    for i in range(len(maps)):
+    for block in maps:
         new_dq = []
+        dq.reverse()
         while len(dq) > 0:
             start, end = dq.pop()
-            for dest, src, length in maps[i]:
+            if start < block[0][1]:
+                new_dq.append((start, block[0][1] - 1))
+                start = block[0][1]
+            for dest, src, length in block:
                 if end < start:
                     break
                 if src <= start < src + length:
                     if end < src + length:
-                        new_dq.append((dest + start - src, dest + end - start))
+                        new_dq.append((dest + start - src, dest + end - src))
+                        break
                     else:
-                        new_dq.append((dest + start - src, dest + start - src + length))
-                        start += length
-            if end >= start:
-                new_dq.append((start, end))
+                        new_dq.append((dest + start - src, dest + length - 1))
+                        start = src + length
+            else:
+                if end >= start:
+                    new_dq.append((start, end))
 
         dq = list(new_dq)
 
     part2 = min(start for start, _ in dq)
+
     return (part1, part2)
 
 
