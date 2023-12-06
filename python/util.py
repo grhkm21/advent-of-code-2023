@@ -66,3 +66,5 @@ def get_ints(s):
 
 
 prod = product
+MIN = -10**100
+MAX = 10**100

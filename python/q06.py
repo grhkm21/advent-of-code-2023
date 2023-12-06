@@ -40,11 +40,22 @@ def parse_data():
 
 
 def solve(data):
-    part1 = 0
+    part1 = 1
     part2 = 0
 
-    for line in data:
-        pass
+    time = get_ints(data[0])
+    dist = get_ints(data[1])
+
+    for t, d in zip(time, dist):
+        cnt = 0
+        for j in range(t + 1):
+            if j * (t - j) > d:
+                cnt += 1
+        part1 *= cnt
+
+    t, d = map(lambda s: int(''.join(map(str, s))), [time, dist])
+    for j in trange(t + 1):
+        part2 += j * (t - j) > d
 
     return (part1, part2)
 
