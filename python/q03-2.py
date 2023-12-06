@@ -17,16 +17,19 @@ from util import *
 
 
 def parse_data():
-    qno = __file__.split("/")[-1]
+    if len(sys.argv) == 1:
+        qno = __file__.split("/")[-1]
+        if qno == "template.py":
+            raise RuntimeError("The code does not work for template.py :)")
+        else:
+            fname = "../input/in_2023_" + qno[1:3]
+    elif len(sys.argv) == 2:
+        fname = sys.argv[1]
+    else:
+        raise RuntimeError(f"Usage: {sys.argv[0]} [input]")
 
-    if qno == "template.py":
-        raise RuntimeError("The code does not work for template.py :)")
-
-    qno = qno[1:3]
-    with open(f"../input/in_2023_{qno}", "r") as fin:
+    with open(fname, "r") as fin:
         lines = fin.read().strip().split("\n")
-
-    pass
 
     return lines
 
@@ -37,8 +40,6 @@ def get_nums(filtered):
 
 
 def part1(data):
-    ans = 0
-
     data = list(map(list, data))
     filtered = [["."] * len(data[i]) for i in range(len(data))]
     vis = set()
@@ -47,12 +48,10 @@ def part1(data):
     r, c = len(data), len(data[0])
     is_valid = lambda pos: 0 <= pos[0] < r and 0 <= pos[1] < c
 
-    for i in range(r):
-        for j in range(c):
-            if is_valid((i, j)) and data[i][j] not in string.digits + ".":
-                for pos in adj8(i, j):
-                    dq.append(pos)
-                    vis.add(pos)
+    for pos in itertools.product(range(r), range(c)):
+        if is_valid(pos) and data[pos[0]][pos[1]] not in string.digits + ".":
+            dq.append(pos)
+            vis.add(pos)
 
     while len(dq) > 0:
         i, j = dq.pop()
