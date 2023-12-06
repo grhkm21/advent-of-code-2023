@@ -21,15 +21,16 @@ def adj8:
     adj8(.[0]; .[1]);
 
 def group_consecutive_by(f):
-    reduce .[] as $val ([[], []] ;
-        . as [$cur, $result]
-        | if ($cur == []) or (($val | f) == ($cur[-1] | f) + 1) then
-            [$cur + [$val], $result]
+    reduce .[] as $val (null ;
+        if (. == null) then
+            .cur = [$val]
+        elif (($val | f) == (.cur[-1] | f) + 1) then
+            .cur += [$val]
         else
-            [[$val], $result + [$cur]]
+            .result += [.cur] | .cur = [$val]
         end
     )
-    | .[1] + [.[0]];
+    | .result + [.cur];
 
 def find_filtered(filter_fn):
     . as $data
@@ -44,7 +45,7 @@ def adj_symbols:
 
 def find_nums:
     [find_filtered(is_digit)]
-    | group_consecutive_by(.[0] * 10000 + .[1])
+    | group_consecutive_by(if . == null then -1 else .[0] * 10000 + .[1] end)
     | .[];
 
 def part1:
@@ -59,5 +60,5 @@ def part1:
 def part2:
     0;
 
-# parse_data | [part1] | add
+parse_data | [part1] | add
 # parse_data | {"part1": [part1] | add, "part2": part2}
