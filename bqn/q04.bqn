@@ -1,5 +1,5 @@
 ⟨Split⟩ ← •Import "util.bqn"
-mt ← {•ParseFloat¨¨ ' 'Split¨'|'Split 1⊑':'Split𝕩}¨•FLines"in"
+mt ← {•ParseFloat¨¨ ' 'Split¨'|'Split 1⊑':'Split𝕩}¨•FLines"../input/in_2023_04"
 
 # TODO: Replace this with a Fold
 Iter ← {
@@ -10,3 +10,6 @@ Iter ← {
 
 part1 ← +´⌊2⋆1-˜(+´∊˜´)¨mt
 part2 ← ⊑Iter⍟(≠mt) 0∾(≠⊸⥊⟜1⊸⋈(+´∊˜´)¨mt)
+
+•Out •Repr part1
+•Out •Repr part2
