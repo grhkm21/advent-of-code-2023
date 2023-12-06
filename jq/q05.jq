@@ -3,7 +3,7 @@ def strip:
 
 def parse_map:
     split(" ") | map(tonumber) | if length == 3 then
-        { "dest": .[0], "src": .[1], "length": .[2] }
+        { "dest": .[0], "src": .[1], "len": .[2] }
     else
         .[]
     end;
@@ -16,12 +16,8 @@ def parse_data:
 def part1:
     reduce .[1:][] as $map (.[0];
         map(. as $data | $map | map(
-            $map
-            | map(
-                select(.src <= $data and $data < .src + .length) | .dest + $data - .src
-              ) | .[]) + [$data]
-            | .[0]
-        )
+            select(.src <= $data and $data < .src + .len) | .dest + $data - .src
+        ) + [$data] | .[0])
     ) | min;
 
 def part2:
