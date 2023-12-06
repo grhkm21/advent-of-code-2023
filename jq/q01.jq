@@ -15,4 +15,4 @@ def part1:
 def part2:
     map(part2_line | .[0] + .[-1] | tonumber) | add;
 
-[inputs] | ["part1: " + (part1 | tostring), "part2: " + (part2 | tostring)]
+[inputs] | {"part1": part1, "part2": part2}

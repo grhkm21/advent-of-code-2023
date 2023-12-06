@@ -1,4 +1,4 @@
-⟨Split, SplitF⟩ ← •Import "util.bqn"
+⟨Split, SplitF, _cache⟩ ← •Import "util.bqn"
 maps ← ⟨⟩SplitF•FLines"../input/in_2023_05"
 orig ← •ParseFloat¨' 'Split⊑1↓':'Split⊑⊑maps
 maps ↩ {(¯1+1⊏𝕩)⊸+⌾(2⊸⊏)𝕩}⌾⍉¨{1(⊏⎉1⍋⊸⊏⊢)∘‿3⥊∾(•ParseFloat¨)¨' 'Split¨1↓𝕩}¨1↓maps
@@ -22,10 +22,11 @@ Follow ← {
     path ↩ path ∾ (¬added) ⥊ ≠𝕩
   }¨maps
   val⋈path
-}
+} _cache
+
 
 G ← {
-  max ← 10 ⋆ 100
+  max ← ∞
   BS ← {
     start‿end ← 𝕩
     mid ← ⌊(start + end) ÷ 2
