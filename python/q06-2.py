@@ -2,7 +2,6 @@ import glob
 import hashlib
 import itertools
 import json
-import math
 import multiprocessing as mp
 import os
 import numpy as np
@@ -12,6 +11,7 @@ import sys
 import time
 import timeit
 
+from math import floor, sqrt
 from collections import Counter, deque
 from functools import reduce, cache
 from random import random, randrange, randint
@@ -33,17 +33,25 @@ def parse_data():
 
     with open(fname, "r") as fin:
         lines = fin.read().strip().split("\n")
+        # Note: It might include the header "Game ...:" number!
+        # lines = [get_ints(line) for line in lines]
 
     return lines
 
 
 def solve(data):
-    part1 = 0
+    part1 = 1
     part2 = 0
 
-    for line in data:
-        pass
+    time = get_ints(data[0])
+    dist = get_ints(data[1])
 
+    def _solve(t, d):
+        y = floor((t - sqrt(t**2 - 4*d)) / 2) + 1
+        return t + 1 - 2 * y
+
+    part1 = prod([_solve(t, d) for t, d in zip(time, dist)])
+    part2 = _solve(*map(lambda s: int(''.join(map(str, s))), [time, dist]))
     return (part1, part2)
 
 
@@ -70,3 +78,4 @@ if __name__ == "__main__":
             print(f"Time taken: {t}")
     else:
         main()
+

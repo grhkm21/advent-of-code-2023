@@ -54,7 +54,7 @@ def solve(data):
         part1 *= cnt
 
     t, d = map(lambda s: int(''.join(map(str, s))), [time, dist])
-    for j in trange(t + 1):
+    for j in range(t + 1):
         part2 += j * (t - j) > d
 
     return (part1, part2)
