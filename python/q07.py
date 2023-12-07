@@ -46,12 +46,12 @@ def solve():
             alpha = "23456789TJQKA"
         return [alpha.index(c) for c in s]
 
-    def get_possible(s : str):
-        return itertools.product(*["23456789TQKA" if c == "J" else c for c in s])
-
     def get_type(s, two=False):
-        if two: return max(get_type(t, two=False) for t in get_possible(s))
-        return sorted(list(Counter(s).values()), reverse=True)
+        cnt = Counter(s)
+        if two and (val := cnt["J"]) < 5:
+            del cnt["J"]
+            cnt[cnt.most_common(1)[0][0]] += val
+        return sorted(list(cnt.values()), reverse=True)
 
     def get_key(s, two=False):
         return (get_type(s[0], two), get_strength(s[0], two), s[1])
