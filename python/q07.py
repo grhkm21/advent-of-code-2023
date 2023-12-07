@@ -13,7 +13,7 @@ import time
 import timeit
 import datetime
 
-from typing import Any
+from typing import Any, Generator
 from collections import Counter, deque
 from functools import reduce, cache
 from random import random, randrange, randint
@@ -39,13 +39,44 @@ def parse_data():
 
 
 def solve():
-    part1 = 0
-    part2 = 0
+    def get_strength(s, two=False):
+        if two:
+            alpha = "J23456789TQKA"
+        else:
+            alpha = "23456789TJQKA"
+        return [alpha.index(c) for c in s]
 
-    for line in data:
-        pass
+    def get_possible(s : str):
+        if len(s) == 0:
+            yield ""
+            return
 
-    return (part1, part2)
+        other = "23456789TQKA" if s[0] == "J" else s[0]
+        for r in get_possible(s[1:]):
+            for c in other:
+                yield c + r
+
+    def get_type(s, two=False):
+        if two:
+            return max(get_type(t, two=False) for t in get_possible(s))
+        vals = sorted(list(Counter(s).values()))
+        if vals == [5]: return 0
+        if vals == [1, 4]: return -1
+        if vals == [2, 3]: return -2
+        if vals == [1, 1, 3]: return -3
+        if vals == [1, 2, 2]: return -4
+        if vals == [1, 1, 1, 2]: return -5
+        return -6
+
+    def get_key(s, two=False):
+        return (get_type(s[0], two), get_strength(s[0], two), s[1])
+
+    _data = [(s[0], int(s[1])) for s in [line.split() for line in data]]
+    def get_ans(two=False):
+        sorted_data = sorted(_data, key=lambda s: get_key(s, two))
+        return sum(val * (i + 1) for i, (_, val) in enumerate(sorted_data))
+
+    return (get_ans(False), get_ans(True))
 
 
 def main(file=sys.stdout):
