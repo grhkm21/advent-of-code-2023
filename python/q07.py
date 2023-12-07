@@ -47,26 +47,11 @@ def solve():
         return [alpha.index(c) for c in s]
 
     def get_possible(s : str):
-        if len(s) == 0:
-            yield ""
-            return
-
-        other = "23456789TQKA" if s[0] == "J" else s[0]
-        for r in get_possible(s[1:]):
-            for c in other:
-                yield c + r
+        return itertools.product(*["23456789TQKA" if c == "J" else c for c in s])
 
     def get_type(s, two=False):
-        if two:
-            return max(get_type(t, two=False) for t in get_possible(s))
-        vals = sorted(list(Counter(s).values()))
-        if vals == [5]: return 0
-        if vals == [1, 4]: return -1
-        if vals == [2, 3]: return -2
-        if vals == [1, 1, 3]: return -3
-        if vals == [1, 2, 2]: return -4
-        if vals == [1, 1, 1, 2]: return -5
-        return -6
+        if two: return max(get_type(t, two=False) for t in get_possible(s))
+        return sorted(list(Counter(s).values()), reverse=True)
 
     def get_key(s, two=False):
         return (get_type(s[0], two), get_strength(s[0], two), s[1])
