@@ -1,20 +1,24 @@
+import glob
 import hashlib
 import itertools
 import json
 import math
 import multiprocessing as mp
+import os
 import numpy as np
 import re
 import string
 import sys
 import time
+import timeit
+import datetime
 
+from typing import Any
 from collections import Counter, deque
 from functools import reduce, cache
 from random import random, randrange, randint
 from tqdm import tqdm, trange
 from util import *
-
 
 def parse_data():
     if len(sys.argv) == 1:
@@ -28,10 +32,10 @@ def parse_data():
     else:
         raise RuntimeError(f"Usage: {sys.argv[0]} [input]")
 
+    global data
     with open(fname, "r") as fin:
-        lines = fin.read().strip().split("\n")
-
-    return lines
+        data = fin.read().strip().split("\n")
+        data = list(map(list, data))
 
 
 def get_nums(filtered):
@@ -39,8 +43,7 @@ def get_nums(filtered):
     return list(map(int, nums))
 
 
-def part1(data):
-    data = list(map(list, data))
+def part1():
     filtered = [["."] * len(data[i]) for i in range(len(data))]
     vis = set()
     dq = deque()
@@ -64,10 +67,9 @@ def part1(data):
     return sum(get_nums(filtered))
 
 
-def part2(data):
+def part2():
     ans = 0
 
-    data = list(map(list, data))
     r, c = len(data), len(data[0])
 
     vis = set()
@@ -93,7 +95,30 @@ def part2(data):
     return ans
 
 
+def main(file=sys.stdout):
+    print("[!] part1:", part1(), file=file)
+    print("[!] part2:", part2(), file=file)
+
+
 if __name__ == "__main__":
-    data = parse_data()
-    print("[!] part1:", part1(data))
-    print("[!] part2:", part2(data))
+    parse_data()
+    arg = os.environ.get("TIME")
+
+    if arg is not None:
+        try:
+            arg = int(arg)
+        except ValueError:
+            raise ValueError(f"The `TIME` environment variable ({arg}) is not an integer.")
+
+        print(f"Timing code for {arg} times!")
+        with open(os.devnull, "w") as fout:
+            μt = timeit.timeit(lambda: main(file=fout), number=arg) / arg * 10**6
+            if μt < 10**3:
+                print(f"Time taken: {μt:.2f}μs")
+            elif μt < 10**6:
+                print(f"Time taken: {μt / 10**3:.2f}ms")
+            else:
+                print(f"Time taken: {μt / 10**6:.2f}s")
+    else:
+        main()
+

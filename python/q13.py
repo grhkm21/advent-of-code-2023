@@ -70,9 +70,9 @@ if __name__ == "__main__":
             if μt < 10**3:
                 print(f"Time taken: {μt:.2f}μs")
             elif μt < 10**6:
-                print(f"Time taken: {μt * 10**3:.2f}ms")
+                print(f"Time taken: {μt / 10**3:.2f}ms")
             else:
-                print(f"Time taken: {μt * 10**6:.2f}s")
+                print(f"Time taken: {μt / 10**6:.2f}s")
     else:
         main()
 
