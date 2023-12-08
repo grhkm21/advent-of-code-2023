@@ -14,7 +14,7 @@ import timeit
 import datetime
 
 from typing import Any
-from sympy.ntheory.modular import crt
+from sympy.ntheory.modular import crt, solve_congruence
 from collections import Counter, deque
 from functools import reduce, cache
 from random import random, randrange, randint
@@ -59,31 +59,32 @@ def solve():
     ok = []
     for s in mp:
         if s[-1] == "A":
-            orb = [s]
-            for i in range(26**3 * 10):
-                ins = seq[i % len(seq)]
-                orb.append(mp[orb[-1]][ins == "R"])
+            t = s
             dt = {}
-            for i, t in enumerate(orb):
-                key = (t, i % 2)
+
+            for i in range(26**3 * 50):
+                key = (t, i % len(seq))
                 if key not in dt:
                     dt[key] = []
                 dt[key].append(i)
+                t = mp[t][seq[i % len(seq)] == "R"]
+
             cur = []
-            for key, val in dt.items():
-                t = key[0]
+            for (t, i), val in dt.items():
                 if t[-1] != "Z":
                     continue
                 if len(val) == 1:
                     continue
-                cur.append((val[-1] - val[-2], val[-1]))
+                cur.append((val[-1], val[-1] - val[-2]))
             ok.append(cur)
 
     for u in itertools.product(*ok):
-        mod, rem = [r[0] for r in u], [r[1] for r in u]
-        cur = crt(mod, rem)
-        if cur is not None and cur[0] != 0:
-            part2 = cur[0]
+        cur = solve_congruence(*u)
+        if cur is not None:
+            sol, mod = cur
+            if sol == 0:
+                sol += mod
+            part2 = min(part2, sol)
 
     return (part1, part2)
 
