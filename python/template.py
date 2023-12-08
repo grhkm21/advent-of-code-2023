@@ -14,6 +14,7 @@ import timeit
 import datetime
 
 from typing import Any
+from sympy.ntheory.modular import crt
 from collections import Counter, deque
 from functools import reduce, cache
 from random import random, randrange, randint

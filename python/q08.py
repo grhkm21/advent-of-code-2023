@@ -14,6 +14,7 @@ import timeit
 import datetime
 
 from typing import Any
+from sympy.ntheory.modular import crt
 from collections import Counter, deque
 from functools import reduce, cache
 from random import random, randrange, randint
@@ -33,17 +34,56 @@ def parse_data():
     else:
         raise RuntimeError(f"Usage: {sys.argv[0]} [input]")
 
-    global data
+    global seq, data
     with open(fname, "r") as fin:
-        data = fin.read().strip().split("\n")
+        seq, dt = fin.read().strip().split("\n\n")
+        data = dt.split("\n")
 
 
 def solve():
     part1 = 0
-    part2 = 0
+    part2 = MAX
 
+    mp = {}
     for line in data:
-        pass
+        lhs, rhs = line.split(" = ")
+        rhs = rhs.strip("(").strip(")")
+        mp[lhs] = rhs.split(", ")
+
+    cur = "AAA"
+    while cur != "ZZZ":
+        ins = seq[part1 % len(seq)]
+        cur = mp[cur][ins == "R"]
+        part1 += 1
+
+    ok = []
+    for s in mp:
+        if s[-1] == "A":
+            orb = [s]
+            for i in range(26**3 * 10):
+                ins = seq[i % len(seq)]
+                orb.append(mp[orb[-1]][ins == "R"])
+            dt = {}
+            for i, t in enumerate(orb):
+                key = (t, i % 2)
+                if key not in dt:
+                    dt[key] = []
+                dt[key].append(i)
+            cur = []
+            for key, val in dt.items():
+                t = key[0]
+                if t[-1] != "Z":
+                    continue
+                if len(val) == 1:
+                    continue
+                cur.append((val[-1] - val[-2], val[-1]))
+            ok.append(cur)
+
+    for u in itertools.product(*ok):
+        mod, rem = [r[0] for r in u], [r[1] for r in u]
+        cur = crt(mod, rem)
+        if cur is not None and cur[0] != 0:
+            part2 = cur[0]
 
     return (part1, part2)
 
@@ -75,4 +115,3 @@ if __name__ == "__main__":
                 print(f"Time taken: {μt / 10**6:.2f}s")
     else:
         main()
-
