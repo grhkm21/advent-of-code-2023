@@ -1,3 +1,4 @@
+import os
 import hashlib
 import itertools
 import json
@@ -8,6 +9,8 @@ import re
 import string
 import sys
 import time
+import timeit
+import regex
 
 from collections import Counter
 from functools import reduce, cache
@@ -59,7 +62,30 @@ def part2(data):
     return tot
 
 
-if __name__ == "__main__":
+def main(file=sys.stdout):
     data = parse_data()
-    print("[!] part1:", part1(data))
-    print("[!] part2:", part2(data))
+    print("[!] part1:", part1(data), file=file)
+    print("[!] part2:", part2(data), file=file)
+
+
+if __name__ == "__main__":
+    arg = os.environ.get("TIME")
+
+    if arg is not None:
+        try:
+            arg = int(arg)
+        except ValueError:
+            raise ValueError(f"The `TIME` environment variable ({arg}) is not an integer.")
+
+        print(f"Timing code for {arg} times!")
+        with open(os.devnull, "w") as fout:
+            μt = timeit.timeit(lambda: main(file=fout), number=arg) / arg * 10**6
+            if μt < 10**3:
+                print(f"Time taken: {μt:.2f}μs")
+            elif μt < 10**6:
+                print(f"Time taken: {μt / 10**3:.2f}ms")
+            else:
+                print(f"Time taken: {μt / 10**6:.2f}s")
+    else:
+        main()
+
