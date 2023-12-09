@@ -43,7 +43,18 @@ def solve():
     part2 = 0
 
     for line in data:
-        pass
+        nums = list(map(int, line.split()))
+        diffs = [nums]
+        while len(diffs[-1]) > 1:
+            diffs.append([diffs[-1][i + 1] - diffs[-1][i] for i in range(len(diffs[-1]) - 1)])
+        diffs[-1].append(0)
+        for i in range(len(diffs) - 2, -1, -1):
+            diffs[i].append(diffs[i][-1] + diffs[i + 1][-1])
+        diffs[-1].insert(0, 0)
+        for i in range(len(diffs) - 2, -1, -1):
+            diffs[i].insert(0, diffs[i][0] - diffs[i + 1][0])
+        part1 += diffs[0][-1]
+        part2 += diffs[0][0]
 
     return (part1, part2)
 
