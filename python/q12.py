@@ -54,10 +54,11 @@ def solve():
             for j in range(ln + 1):
                 dp[i][j] = int(j == ln)
         for i in range(ls - 1, -1, -1):
-            for j in range(ln + 1):
-                if s[i] == "." or s[i] == "?":
-                    dp[i][j] += dp[i + 1][j]
-                if j < ln and (s[i] == "#" or s[i] == "?"):
+            if s[i] == "." or s[i] == "?":
+                for j in range(ln + 1):
+                    dp[i][j] = dp[i + 1][j]
+            if s[i] == "#" or s[i] == "?":
+                for j in range(len(nums)):
                     ni = i + nums[j]
                     if ni <= ls and "." not in s[i:ni] and (ni == len(s) or s[ni] != "#"):
                         dp[i][j] += dp[ni + 1][j + 1]
@@ -66,8 +67,8 @@ def solve():
     for line in tqdm(data):
         pat, nums = line.split(" ")
         nums = list(map(int, nums.split(",")))
-        part1 += solve(pat, tuple(nums))
-        part2 += solve("?".join([pat] * 5), tuple(nums * 5))
+        part1 += solve(pat, nums)
+        part2 += solve("?".join([pat] * 5), nums * 5)
 
     return (part1, part2)
 
