@@ -47,37 +47,35 @@ def solve():
     part1 = 0
     part2 = 0
 
-    @cache
-    def _solve(s, nums, prev=0):
-        if len(s) == 0:
-            return len(nums) == 0 or (len(nums) == 1 and prev == nums[0])
-        c = s[0]
-        if c == "?":
-            return _solve("." + s[1:], nums, prev) + _solve("#" + s[1:], nums, prev)
-        if c == ".":
-            if len(nums) == 0:
-                return _solve(s[1:], nums, 0)
-            if prev == 0:
-                return _solve(s[1:], nums, 0)
-            if prev != nums[0]:
-                return 0
-            return _solve(s[1:], nums[1:], 0)
-        if c == "#":
-            if len(nums) == 0:
-                return 0
-            if prev + 1 > nums[0]:
-                return 0
-            return _solve(s[1:], nums, prev + 1)
-        raise RuntimeError(f"_solve({s}, {nums}, {prev})")
+    dp = {}
+    def _solve(s, nums, i=0, j=0):
+        if (i, j) in dp:
+            return dp[i, j]
+
+        if i >= len(s):
+            dp[i, j] = int(j == len(nums))
+            return dp[i, j]
+
+        dp[i, j] = 0
+        if s[i] == "." or s[i] == "?":
+            dp[i, j] += _solve(s, nums, i + 1, j)
+
+        if j < len(nums) and (s[i] == "#" or s[i] == "?"):
+            ni = i + nums[j]
+            if ni <= len(s) and all(s[j] != "." for j in range(i, ni)) and (ni == len(s) or s[ni] != "#"):
+                dp[i, j] += _solve(s, nums, ni + 1, j + 1)
+
+        return dp[i, j]
 
     def solve(s, nums):
-        return _solve(s, tuple(nums), 0)
+        dp.clear()
+        return _solve(s, nums)
 
     for line in tqdm(data):
         pat, nums = line.split(" ")
         nums = list(map(int, nums.split(",")))
-        part1 += solve(pat, nums)
-        part2 += solve("?".join([pat] * 5), nums * 5)
+        part1 += solve(pat, tuple(nums))
+        part2 += solve("?".join([pat] * 5), tuple(nums * 5))
 
     return (part1, part2)
 
