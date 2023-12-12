@@ -16,14 +16,13 @@ def get_url(day, year=today_year):
 
 args = sys.argv
 if len(args) == 1:
-    RuntimeWarning(f"Invalid inputs. Format should be `{sys.argv[0]} <day> [year]`")
     day, year = today_day, today_year
 elif len(args) == 2:
     day, year = int(sys.argv[1]), today_year
 elif len(args) == 3:
     day, year = int(sys.argv[1]), int(sys.argv[2])
 else:
-    raise RuntimeError(f"Invalid inputs. Format should be `{sys.argv[0]} <day> [year]`")
+    raise RuntimeError(f"Invalid inputs. Format should be `{sys.argv[0]} [day] [year]`")
 
 fname = f"in_{year}_{day:02}"
 if len(glob.glob(f"input/{fname}*")):

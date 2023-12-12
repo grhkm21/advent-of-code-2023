@@ -71,6 +71,23 @@ def get_ints(s):
     return list(map(int, re.findall(r"\d+", s)))
 
 
+def pad(grid, c="#"):
+    c = len(grid[0])
+    return [["#"] * (c + 2)] + [["#"] + s + ["#"] for s in grid] + [["#"] * (c + 2)]
+
+
+def transpose(arr):
+    return [[arr[i][j] for i in range(len(arr))] for j in range(len(arr[0]))]
+
+
+def dist_euclidean(d1, d2):
+    return sum((x - y)**2 for x, y in zip(d1, d2))**0.5
+
+
+def dist_manhattan(d1, d2):
+    return sum(abs(x - y) for x, y in zip(d1, d2))
+
+
 prod = product
 MIN = -10**100
 MAX = 10**100
