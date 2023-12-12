@@ -47,29 +47,21 @@ def solve():
     part1 = 0
     part2 = 0
 
-    dp = {}
-    def _solve(s, nums, i=0, j=0):
-        if (i, j) in dp:
-            return dp[i, j]
-
-        if i >= len(s):
-            dp[i, j] = int(j == len(nums))
-            return dp[i, j]
-
-        dp[i, j] = 0
-        if s[i] == "." or s[i] == "?":
-            dp[i, j] += _solve(s, nums, i + 1, j)
-
-        if j < len(nums) and (s[i] == "#" or s[i] == "?"):
-            ni = i + nums[j]
-            if ni <= len(s) and all(s[j] != "." for j in range(i, ni)) and (ni == len(s) or s[ni] != "#"):
-                dp[i, j] += _solve(s, nums, ni + 1, j + 1)
-
-        return dp[i, j]
-
     def solve(s, nums):
-        dp.clear()
-        return _solve(s, nums)
+        ls, ln = len(s), len(nums)
+        dp = [[0] * (ln + 1) for _ in range(ls + 2)]
+        for i in range(ls, ls + 2):
+            for j in range(ln + 1):
+                dp[i][j] = int(j == ln)
+        for i in range(ls - 1, -1, -1):
+            for j in range(ln + 1):
+                if s[i] == "." or s[i] == "?":
+                    dp[i][j] += dp[i + 1][j]
+                if j < ln and (s[i] == "#" or s[i] == "?"):
+                    ni = i + nums[j]
+                    if ni <= ls and "." not in s[i:ni] and (ni == len(s) or s[ni] != "#"):
+                        dp[i][j] += dp[ni + 1][j + 1]
+        return dp[0][0]
 
     for line in tqdm(data):
         pat, nums = line.split(" ")
