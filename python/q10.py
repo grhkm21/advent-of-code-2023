@@ -14,7 +14,8 @@ import timeit
 import datetime
 
 from typing import Any
-from sympy.ntheory.modular import crt
+from colorama import Fore, Style
+from sympy.ntheory.modular import crt, solve_congruence
 from collections import Counter, deque
 from functools import reduce, cache
 from random import random, randrange, randint
@@ -150,13 +151,30 @@ def main(file=sys.stdout):
 
 if __name__ == "__main__":
     parse_data()
-    arg = os.environ.get("TIME")
+    time_arg = os.environ.get("TIME")
+    submit_arg = os.environ.get("SUBMIT")
 
-    if arg is not None:
+    if submit_arg is not None:
+        from submit import submit
         try:
-            arg = int(arg)
+            arg = int(submit_arg)
         except ValueError:
-            raise ValueError(f"The `TIME` environment variable ({arg}) is not an integer.")
+            raise ValueError(f"The `SUBMIT` environment variable ({submit_arg}) is not an integer.")
+
+        if not (0 <= arg <= 2):
+            raise ValueError(f"Invalid `SUBMIT` ({submit_arg}), should be between 0 and 2.")
+
+        part1, part2 = solve()
+        part = 2 if arg == 2 or (arg == 0 and part2 != 0) else 1
+        ans = part2 if arg == 2 or (arg == 0 and part2 != 0) else part1
+        print(f"Submitting {Fore.GREEN}{ans}{Style.RESET_ALL} to day {get_day()} part {part}.")
+        submit(part, ans, get_day(), 2023)
+
+    elif time_arg is not None:
+        try:
+            arg = int(time_arg)
+        except ValueError:
+            raise ValueError(f"The `TIME` environment variable ({time_arg}) is not an integer.")
 
         print(f"Timing code for {arg} times!")
         with open(os.devnull, "w") as fout:
@@ -169,3 +187,4 @@ if __name__ == "__main__":
                 print(f"Time taken: {μt / 10**6:.2f}s")
     else:
         main()
+
