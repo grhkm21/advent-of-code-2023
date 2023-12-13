@@ -16,7 +16,7 @@ import datetime
 from typing import Any
 from colorama import Fore, Style
 from sympy.ntheory.modular import crt, solve_congruence
-from collections import Counter, deque
+from collections import Counter, defaultdict, deque
 from functools import reduce, cache
 from random import random, randrange, randint
 from tqdm import tqdm, trange
@@ -40,15 +40,36 @@ def parse_data():
 
     global data
     with open(fname, "r") as fin:
-        data = fin.read().strip().split("\n")
+        data = fin.read().strip().split("\n\n")
 
 
 def solve():
     part1 = 0
     part2 = 0
 
-    for line in data:
-        pass
+    def solve_col(grid):
+        sols = {0: [], 1: []}
+        for i in range(len(grid[0]) - 1):
+            diff = 0
+            for d in range(min(i + 1, len(grid[0]) - i - 1)):
+                diff += sum(grid[r][i - d] != grid[r][i + 1 + d] for r in range(len(grid)))
+            if diff <= 1:
+                sols[diff].append(i + 1)
+        return sols
+
+    def solves(grid):
+        sols = {0: [], 1: []}
+        for key, val in solve_col(grid).items():
+            sols[key].extend(val)
+        for key, val in solve_col(transpose(grid)).items():
+            sols[key].extend([v * 100 for v in val])
+        return sols
+
+    for grid in data:
+        grid = grid.split("\n")
+        res = solves(grid)
+        part1 += sum(res[0])
+        part2 += sum(res[1])
 
     return (part1, part2)
 
