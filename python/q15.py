@@ -47,8 +47,35 @@ def solve():
     part1 = 0
     part2 = 0
 
-    for line in data:
-        pass
+    line = data[0].split(",")
+    def _hash(s):
+        cur = 0
+        for c in s:
+            cur = (cur + ord(c)) * 17 % 256
+        return cur
+
+    for s in line:
+        part1 += _hash(s)
+
+    boxes = [[] for _ in range(256)]
+    for s in line:
+        a, op, b = re.findall(r"(.+)([-=])(.?)", s)[0]
+        key = _hash(a)
+        # print(a, key)
+        if op == "-":
+            val = [s for s in boxes[key] if s[0] == a]
+            if len(val) > 0:
+                boxes[key].remove(val[0])
+        elif op == "=":
+            for i in range(len(boxes[key])):
+                if boxes[key][i][0] == a:
+                    boxes[key][i] = (a, int(b))
+                    break
+            else:
+                boxes[key].append((a, int(b)))
+    for i in range(len(boxes)):
+        for j in range(len(boxes[i])):
+            part2 += (i + 1) * (j + 1) * boxes[i][j][1]
 
     return (part1, part2)
 
