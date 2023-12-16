@@ -47,8 +47,56 @@ def solve():
     part1 = 0
     part2 = 0
 
-    for line in data:
-        pass
+    m, n = len(data), len(data[0])
+    is_valid = lambda pos: 0 <= pos[0] < m and 0 <= pos[1] < n
+
+    def bfs_dq(st):
+        dq = deque([st])
+        vis = set([st[0]])
+        vis_dir = set([st])
+
+        while len(dq) > 0:
+            pos, dirc = dq.popleft()
+            (x, y), (dx, dy) = pos, dirc
+            assert is_valid(pos)
+
+            c = data[x][y]
+            ndirs = []
+
+            if c == "/":
+                ndirs.append((-dy, -dx))
+            elif c == "\\":
+                ndirs.append((dy, dx))
+            elif c == "|" and dx == 0:
+                ndirs.append((1, 0))
+                ndirs.append((-1, 0))
+            elif c == "-" and dy == 0:
+                ndirs.append((0, -1))
+                ndirs.append((0, 1))
+            else:
+                ndirs.append(dirc)
+
+            for nx, ny in ndirs:
+                npos = (x + nx, y + ny)
+                ndata = (npos, (nx, ny))
+                if not is_valid(npos) or ndata in vis_dir:
+                    continue
+                vis.add(npos)
+                vis_dir.add(ndata)
+                dq.append(ndata)
+
+        return len(vis)
+
+    poss = []
+    for r in range(m):
+        poss.append(((r, 0), (0, 1)))
+        poss.append(((r, n - 1), (0, -1)))
+    for c in range(n):
+        poss.append(((0, c), (1, 0)))
+        poss.append(((m - 1, c), (-1, 0)))
+
+    part1 = bfs_dq(poss[0])
+    part2 = max(map(bfs_dq, poss))
 
     return (part1, part2)
 
