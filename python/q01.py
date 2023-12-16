@@ -49,16 +49,14 @@ def part2(data):
         "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
         "nine"
     ]
+    mp = dict([(y, x) for x, y in enumerate(nums)] + [(str(i), i) for i in range(10)])
     for d in range(10):
         nums.append(str(d))
     tot = 0
+    reg = regex.compile("|".join(nums))
     for line in data:
-        cur = []
-        for i in range(len(line)):
-            for d in nums:
-                if line[i:].startswith(d):
-                    cur.append(str(nums.index(d) % 10))
-        tot += int(cur[0] + cur[-1])
+        nums = [mp[num] for num in reg.findall(line)]
+        tot += 10 * nums[0] + nums[-1]
     return tot
 
 

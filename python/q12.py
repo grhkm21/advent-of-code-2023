@@ -64,7 +64,7 @@ def solve():
                         dp[i][j] += dp[ni + 1][j + 1]
         return dp[0][0]
 
-    for line in tqdm(data):
+    for line in data:
         pat, nums = line.split(" ")
         nums = list(map(int, nums.split(",")))
         part1 += solve(pat, nums)

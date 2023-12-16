@@ -14,7 +14,7 @@ import timeit
 import datetime
 
 from typing import Any
-from sympy.ntheory.modular import crt
+from sympy.ntheory.modular import crt, solve_congruence
 from collections import Counter, deque
 from functools import reduce, cache
 from random import random, randrange, randint
@@ -42,7 +42,7 @@ def parse_data():
 
 def solve():
     part1 = 0
-    part2 = 1
+    part2 = MAX
 
     mp = {}
     for line in data:
@@ -52,17 +52,39 @@ def solve():
 
     cur = "AAA"
     while cur != "ZZZ":
-        cur = mp[cur][seq[part1 % len(seq)] == "R"]
+        ins = seq[part1 % len(seq)]
+        cur = mp[cur][ins == "R"]
         part1 += 1
 
+    ok = []
     for s in mp:
         if s[-1] == "A":
             t = s
-            cnt = 0
-            while t[-1] != "Z":
-                t = mp[t][seq[cnt % len(seq)] == "R"]
-                cnt += 1
-            part2 = math.lcm(part2, cnt)
+            dt = {}
+
+            for i in range(26**3 * 50):
+                key = (t, i % len(seq))
+                if key not in dt:
+                    dt[key] = []
+                dt[key].append(i)
+                t = mp[t][seq[i % len(seq)] == "R"]
+
+            cur = []
+            for (t, i), val in dt.items():
+                if t[-1] != "Z":
+                    continue
+                if len(val) == 1:
+                    continue
+                cur.append((val[-1], val[-1] - val[-2]))
+            ok.append(cur)
+
+    for u in itertools.product(*ok):
+        cur = solve_congruence(*u)
+        if cur is not None:
+            sol, mod = cur
+            if sol == 0:
+                sol += mod
+            part2 = min(part2, sol)
 
     return (part1, part2)
 
@@ -94,4 +116,3 @@ if __name__ == "__main__":
                 print(f"Time taken: {μt / 10**6:.2f}s")
     else:
         main()
-

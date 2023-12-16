@@ -32,7 +32,7 @@ def get_day():
 
 def parse_data():
     if len(sys.argv) == 1:
-        fname = f"../input/in_2023_{get_day()}"
+        fname = f"../input/in_2023_{get_day():02}"
     elif len(sys.argv) == 2:
         fname = sys.argv[1]
     else:

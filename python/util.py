@@ -80,12 +80,17 @@ def transpose(arr):
     return [[arr[i][j] for i in range(len(arr))] for j in range(len(arr[0]))]
 
 
+def rot180(arr):
+    return [[arr[-i - 1][-j - 1] for j in range(len(arr[0]))] for i in range(len(arr))]
+
+
 def dist_euclidean(d1, d2):
     return sum((x - y)**2 for x, y in zip(d1, d2))**0.5
 
 
 def dist_manhattan(d1, d2):
     return sum(abs(x - y) for x, y in zip(d1, d2))
+
 
 
 prod = product
