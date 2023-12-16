@@ -40,15 +40,59 @@ def parse_data():
 
     global data
     with open(fname, "r") as fin:
-        data = fin.read().strip().split("\n")
+        data = [list(s) for s in fin.read().strip().split("\n")]
 
 
 def solve():
     part1 = 0
     part2 = 0
 
-    for line in data:
-        pass
+    def to_north(grid):
+        data = [list(row) for row in grid]
+        for i in range(len(data)):
+            for j in range(len(data[i])):
+                if data[i][j] == "O":
+                    # roll north
+                    k = i
+                    while k > 0 and data[k - 1][j] == ".":
+                        data[k - 1][j], data[k][j] = data[k][j], data[k - 1][j]
+                        k -= 1
+        return data
+
+    def tilt(grid):
+        grid = to_north(grid)
+        grid = transpose(to_north(transpose(grid)))
+        grid = rot180(to_north(rot180(grid)))
+        grid = rot180(transpose(to_north(transpose(rot180(grid)))))
+        return grid
+
+    def score(grid):
+        ans = 0
+        for i in range(len(grid)):
+            for j in range(len(grid[i])):
+                if grid[i][j] == "O":
+                    ans += len(grid) - i
+        return ans
+
+    part1 = score(to_north(data))
+
+    _hash = lambda grid: ";".join("".join(row) for row in grid)
+    mp = {}
+    grid = [list(row) for row in data]
+    TARGET = 1000000000
+    for t in range(1, 1000):
+        if part2 != 0:
+            break
+        grid = tilt(grid)
+        key = _hash(grid)
+        if key not in mp:
+            mp[key] = []
+        mp[key].append(t)
+        if len(mp[key]) > 10:
+            cyc = mp[key][-1] - mp[key][-2]
+            if TARGET % cyc == t % cyc:
+                print("!", t, TARGET, cyc, mp[key])
+                part2 = score(grid)
 
     return (part1, part2)
 
