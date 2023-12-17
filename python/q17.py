@@ -12,6 +12,8 @@ import sys
 import time
 import timeit
 import datetime
+import networkx as nx
+import networkx.exception
 
 from typing import Any
 from colorama import Fore, Style
@@ -41,14 +43,44 @@ def parse_data():
     global data
     with open(fname, "r") as fin:
         data = fin.read().strip().split("\n")
+        # data = [row[:5] for row in data]
 
 
 def solve():
     part1 = 0
     part2 = 0
 
-    for line in data:
-        pass
+    r, c = len(data), len(data[0])
+    def is_valid(pos):
+        return 0 <= pos[0] < r and 0 <= pos[1] < c
+
+    # graph problem!
+    dirs = [(0, 1), (0, -1), (-1, 0), (1, 0)]
+    def get_dist(lb, hb):
+        G = nx.DiGraph()
+        src, dest = (0, 0), (r - 1, c - 1)
+        for cdir in dirs:
+            G.add_edge(src, (src, cdir), weight=0)
+            G.add_edge((dest, cdir), dest, weight=0)
+        for pos in itertools.product(range(r), range(c)):
+            i, j = pos
+            for cdir in dirs:
+                cw = 0
+                ndirs = dirs[:2] if cdir[1] == 0 else dirs[2:]
+                for k in range(1, hb + 1):
+                    npos = (i + cdir[0] * k, j + cdir[1] * k)
+                    if not is_valid(npos):
+                        continue
+                    cw += int(data[npos[0]][npos[1]])
+                    if k < lb:
+                        continue
+                    for ndir in ndirs:
+                        G.add_edge((pos, cdir), (npos, ndir), weight=cw)
+
+        return nx.shortest_path_length(G, src, dest, "weight")
+
+    part1 = get_dist(0, 3)
+    part2 = get_dist(4, 10)
 
     return (part1, part2)
 
