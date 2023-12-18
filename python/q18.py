@@ -16,7 +16,7 @@ import datetime
 from typing import Any
 from colorama import Fore, Style
 from sympy.ntheory.modular import crt, solve_congruence
-from collections import Counter, deque
+from collections import Counter, defaultdict, deque
 from functools import reduce, cache
 from random import random, randrange, randint
 from tqdm import tqdm, trange
@@ -47,8 +47,40 @@ def solve():
     part1 = 0
     part2 = 0
 
-    for line in data:
-        pass
+    def parse_line(line, part):
+        dirs = {"U": (0, 1), "D": (0, -1), "R": (1, 0), "L": (-1, 0)}
+        op, dist, color = re.findall(r"([RDLU]) (\d+) \(#(.+)\)", line)[0]
+        if part == 1:
+            return (dirs[op], int(dist))
+        return (dirs["RDLU"[int(color[-1])]], int(color[:5], 16))
+
+    def solve_part(part):
+        xs, ys = [], []
+        cx, cy = 0, 0
+        edges = left = right = 0
+
+        for line1, line2 in zip(data, data[1:] + [data[0]]):
+            (dx, dy), dist = parse_line(line1, part)
+            (rx, ry), _ = parse_line(line2, part)
+
+            edges += dist - 1
+            if (rx, ry) == (dy, -dx):
+                right += 1
+            elif (rx, ry) == (-dy, dx):
+                left += 1
+
+            nx, ny = cx + dist * dx, cy + dist * dy
+            xs.append(nx)
+            ys.append(ny)
+            cx, cy = nx, ny
+
+        ans = sum(ys[i] * (xs[i + 1] - xs[i - 1]) for i in range(len(xs) - 1)) // 2
+        ans += (edges * 2 + left * 1 + right * 3) // 4
+
+        return ans
+
+    part1 = solve_part(1)
+    part2 = solve_part(2)
 
     return (part1, part2)
 
