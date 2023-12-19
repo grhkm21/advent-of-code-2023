@@ -38,17 +38,71 @@ def parse_data():
     else:
         raise RuntimeError(f"Usage: {sys.argv[0]} [input_file]")
 
-    global data
+    global rules, data
     with open(fname, "r") as fin:
-        data = fin.read().strip().split("\n")
+        crules, data = [s.split("\n") for s in fin.read().strip().split("\n\n")]
+        rules = {line.split("{")[0]: line.split("{")[1].rstrip("}").split(",") for line in crules}
 
 
 def solve():
     part1 = 0
     part2 = 0
 
+    def process(dt, key):
+        for rule in rules[key]:
+            if ":" in rule:
+                cond, target = rule.split(":")
+                assert "<" in cond or ">" in cond, f"{cond} {target}"
+                cond = eval(str(dt[cond[0]]) + cond[1:])
+            else:
+                cond, target = True, rule
+            if cond:
+                if target == "R" or target == "A":
+                    return target == "A"
+                return process(dt, target)
+        raise RuntimeError(f"Unreachable? {dt} {key}")
+
+    def update_bounds(name, op, val, bounds):
+        nbounds = dict(bounds)
+        lb, hb = bounds[name]
+        if op == ">":
+            lb = max(lb, val + 1)
+        else:
+            hb = min(hb, val - 1)
+        nbounds[name] = (lb, hb)
+        return nbounds
+
+    def negate_rule(op, val):
+        if op == ">":
+            return ("<", val + 1)
+        return (">", val - 1)
+
+    def dfs(key, bounds):
+        # print(f"dfs({key}, {bounds})")
+        if any(val[1] < val[0] for val in bounds.values()):
+            return 0
+        if key == "R":
+            return 0
+        if key == "A":
+           return product(val[1] - val[0] + 1 for val in bounds.values())
+        res = 0
+        pat = re.compile(r"([xmas])([<>])(\d+):(.+)")
+        for rule in rules[key]:
+            if ":" in rule:
+                name, op, val, target = pat.findall(rule)[0]
+                val = int(val)
+                res += dfs(target, update_bounds(name, op, val, bounds))
+                bounds = update_bounds(name, *negate_rule(op, val), bounds)
+            else:
+                res += dfs(rule, bounds)
+        return res
+
     for line in data:
-        pass
+        dt = {key: int(val) for key, val in re.findall(r"(.)=(\d+)", line)}
+        res = process(dt, "in")
+        if res:
+            part1 += sum(dt.values())
+    part2 = dfs("in", {key: (1, 4000) for key in "xmas"})
 
     return (part1, part2)
 
