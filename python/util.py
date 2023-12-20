@@ -59,7 +59,6 @@ def powerset(arr):
 
 def revmap(mp):
     res = {}
-
     for key, val in mp.items():
         if val not in res:
             res[val] = []

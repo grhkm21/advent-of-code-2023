@@ -1,4 +1,5 @@
 import glob
+import copy
 import hashlib
 import itertools
 import json
@@ -13,10 +14,10 @@ import time
 import timeit
 import datetime
 
-from typing import Any
+from typing import Any, Deque, Tuple
 from colorama import Fore, Style
 from sympy.ntheory.modular import crt, solve_congruence
-from collections import Counter, deque
+from collections import Counter, defaultdict, deque
 from functools import reduce, cache
 from random import random, randrange, randint
 from tqdm import tqdm, trange
@@ -47,8 +48,93 @@ def solve():
     part1 = 0
     part2 = 0
 
+    keys = set()
+    flip_flops = {}
+    conjugators = {}
+    broadcast = []
+    graph = defaultdict(list)
+    rev_graph = defaultdict(list)
+    data.sort(reverse=True)
+
     for line in data:
-        pass
+        key, val = line.split(" -> ")
+        key = key.lstrip("%").lstrip("&")
+        val = val.split(", ")
+        graph[key] = val
+        for v in val:
+            rev_graph[v].append(key)
+
+        keys.add(key)
+        for k in val:
+            keys.add(k)
+
+        if line.startswith("broadcaster"):
+            broadcast = val
+        elif line.startswith("%"):
+            flip_flops[key] = val
+        else:
+            dt = {"broadcaster": False} if key in broadcast else {}
+            conjugators[key] = (val, dt)
+
+    for key in keys:
+        vals = flip_flops[key] if key in flip_flops else conjugators[key][0] if key in conjugators else broadcast
+        for val in vals:
+            if val in conjugators:
+                conjugators[val][1][key] = False
+
+    def dump_graph():
+        arr = []
+        for key in flip_flops.keys():
+            arr.append(f"{key}[color=\"red\" style=\"filled\"]")
+        for key in conjugators.keys():
+            arr.append(f"{key}[fillcolor=\"green\" style=\"filled\"]")
+        for key in graph:
+            for val in graph[key]:
+                arr.append(f"{key}->{val}")
+        with open("/tmp/a","w") as fout:
+            fout.write("digraph{"+";".join(arr)+"}")
+
+    def process(dq : Deque[Tuple[str, bool, str]], cyc : int):
+        nonlocal states, conj_states, ans, low, high
+        while len(dq) > 0:
+            head, state, prev = dq.popleft()
+            # print(f"{prev=} -> {head=} : state={'False' if not state else 'HIGH'}")
+            if cyc <= 1000:
+                if state == False:
+                    low += 1
+                else:
+                    high += 1
+
+            if head == "broadcaster":
+                for dest in broadcast:
+                    dq.append((dest, state, head))
+            elif head in flip_flops:
+                if state == False:
+                    states[head] = not states[head]
+                    for dest in flip_flops[head]:
+                        dq.append((dest, states[head], head))
+            elif head in conjugators:
+                conj_states[head][prev] = state
+                out = not all(conj_states[head].values())
+                for dest in conjugators[head][0]:
+                    dq.append((dest, out, head))
+
+            if not state and head in rev_graph["jz"] and head not in ans:
+                ans[head] = cyc
+
+    ans = Counter()
+    states = {key: False for key in keys if key not in conjugators}
+    conj_states = {key: dict(conjugators[key][1]) for key in conjugators}
+    low, high = 0, 0
+    ans = Counter()
+
+    cyc = 1
+    while any(key not in ans for key in rev_graph["jz"]):
+        process(deque([("broadcaster", False, "button")]), cyc)
+        cyc += 1
+
+    part1 = low * high
+    part2 = product(ans.values())
 
     return (part1, part2)
 
