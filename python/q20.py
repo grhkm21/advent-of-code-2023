@@ -91,7 +91,7 @@ def solve():
         for key in graph:
             for val in graph[key]:
                 arr.append(f"{key}->{val}")
-        with open("/tmp/a","w") as fout:
+        with open("/tmp/a.dot","w") as fout:
             fout.write("digraph{"+";".join(arr)+"}")
 
     def process(dq : Deque[Tuple[str, bool, str]], cyc : int):
@@ -119,8 +119,12 @@ def solve():
                 for dest in conjugators[head][0]:
                     dq.append((dest, out, head))
 
-            if not state and head in rev_graph["jz"] and head not in ans:
+            if not state and head in rev_graph[target] and head not in ans:
                 ans[head] = cyc
+
+    target = "jz"
+    # target = "13"
+    dump_graph()
 
     ans = Counter()
     states = {key: False for key in keys if key not in conjugators}
@@ -129,8 +133,9 @@ def solve():
     ans = Counter()
 
     cyc = 1
-    while any(key not in ans for key in rev_graph["jz"]):
+    while cyc < 10**6 and any(key not in ans for key in rev_graph[target]):
         process(deque([("broadcaster", False, "button")]), cyc)
+        # print(ans)
         cyc += 1
 
     part1 = low * high
