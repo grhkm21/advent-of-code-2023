@@ -67,7 +67,7 @@ def revmap(mp):
 
 
 def get_ints(s):
-    return list(map(int, re.findall(r"\d+", s)))
+    return list(map(int, re.findall(r"-?\d+", s)))
 
 
 def pad(grid, c="#"):
