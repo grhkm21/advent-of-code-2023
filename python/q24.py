@@ -12,13 +12,15 @@ import sys
 import time
 import timeit
 import datetime
+import sympy
 
+from fractions import Fraction
 from typing import Any
 from colorama import Fore, Style
 from sympy.ntheory.modular import crt, solve_congruence
 from collections import Counter, deque
 from functools import reduce, cache
-from random import random, randrange, randint
+from random import random, randrange, randint, sample
 from tqdm import tqdm, trange
 from util import *
 
@@ -47,8 +49,52 @@ def solve():
     part1 = 0
     part2 = 0
 
-    for line in data:
-        pass
+    LBOUND = 200000000000000
+    HBOUND = 400000000000000
+    # LBOUND, HBOUND = 7, 27
+
+    def solve_linear(mat, col):
+        assert len(mat) == 2 and len(mat[0]) == 2
+        det = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]
+        if det == 0:
+            if col[0] * mat[1][0] != col[1] * mat[0][0] or col[0] * mat[1][1] != col[1] * mat[0][1]:
+                return None
+            return MAX, MAX
+        inv = [[mat[1][1], -mat[0][1]], [-mat[1][0], mat[0][0]]]
+        t1, t2 = [Fraction(vec[0] * col[0] + vec[1] * col[1], det) for vec in inv]
+        if t1 < 0 or t2 < 0:
+            return None
+        return t1, t2
+
+    vals = [list(map(get_ints, line.split(" @ "))) for line in data]
+
+    n = len(vals)
+    for i, j in itertools.combinations(range(n), 2):
+        (x1, y1, _), (dx1, dy1, _) = vals[i]
+        (x2, y2, _), (dx2, dy2, _) = vals[j]
+        mat = [[dx1, -dx2], [dy1, -dy2]]
+        col = [x2 - x1, y2 - y1]
+        sols = solve_linear(mat, col)
+        if sols is None:
+            continue
+
+        if sols == (MAX, MAX):
+            part1 += 1
+            continue
+
+        t1 = sols[0]
+        x, y = x1 + dx1 * t1, y1 + dy1 * t1
+        if LBOUND <= x <= HBOUND and LBOUND <= y <= HBOUND:
+            part1 += 1
+
+    x0, y0, z0, dx0, dy0, dz0 = sympy.var("x0, y0, z0, dx0, dy0, dz0")
+    eqs = []
+    for (x, y, z), (dx, dy, dz) in sample(vals, 10):
+        eqs.append((dx - dx0) * (y0 - y) - (dy - dy0) * (x0 - x))
+        eqs.append((dx - dx0) * (z0 - z) - (dz - dz0) * (x0 - x))
+        eqs.append((dy - dy0) * (z0 - z) - (dz - dz0) * (y0 - y))
+
+    part2 = sum(sympy.solve(sample(eqs, 10), x0, y0, z0, dx0, dy0, dz0)[0][:3])
 
     return (part1, part2)
 
