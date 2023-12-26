@@ -12,13 +12,14 @@ import sys
 import time
 import timeit
 import datetime
+import networkx as nx
 
 from typing import Any
 from colorama import Fore, Style
 from sympy.ntheory.modular import crt, solve_congruence
-from collections import Counter, deque
+from collections import Counter, defaultdict, deque
 from functools import reduce, cache
-from random import random, randrange, randint
+from random import choice, random, randrange, randint, sample, shuffle
 from tqdm import tqdm, trange
 from util import *
 
@@ -47,8 +48,25 @@ def solve():
     part1 = 0
     part2 = 0
 
+    graph = nx.Graph()
     for line in data:
-        pass
+        u, vs = line.split(": ")
+        for v in vs.split():
+            graph.add_edge(u, v, capacity=1)
+
+    u = data[0].split(": ")[0]
+    for v in graph:
+        print(u, v)
+        try:
+            a, b = nx.minimum_cut(graph, u, v)
+            if a == 3:
+                print(b)
+                part1 = len(b[0]) * len(b[1])
+                break
+        except KeyboardInterrupt:
+            break
+        except:
+            pass
 
     return (part1, part2)
 
